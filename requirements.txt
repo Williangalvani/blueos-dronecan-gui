@@ -1,0 +1,6 @@
+dronecan==1.0.27
+pymavlink==2.4.49
+fastapi==0.142.2
+python-multipart==0.0.32
+uvicorn==0.54.0
+websockets==17.1

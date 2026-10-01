@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DroneCAN GUI</title>
+  <link rel="stylesheet" href="static/app.css">
+</head>
+<body>
+  <main>
+    <header class="card">
+      <div>
+        <h1>DroneCAN GUI</h1>
+        <p class="muted">Configure DroneCAN nodes through the autopilot's MAVLink tunnel.</p>
+      </div>
+      <span id="status-chip" class="chip">Disconnected</span>
+    </header>
+
+    <section class="card">
+      <h2>Connection</h2>
+      <form id="connect">
+        <label class="grow">MAVLink URL <input id="url" name="url" value="udpout:host.docker.internal:14550"></label>
+        <label>Node ID <input id="node-id" name="node_id" type="number" min="1" max="127" value="127"></label>
+        <label>Bus <input id="bus" name="bus" type="number" min="1" max="4" value="1"></label>
+        <label>Target system <input id="target" name="target_system" type="number" min="0" max="255" value="0"></label>
+        <label>Signing key <input id="signing" name="signing_key" type="password" autocomplete="off"></label>
+        <div class="buttons">
+          <button id="connect-button" type="submit">Connect</button>
+          <button id="disconnect-button" type="button" class="secondary">Disconnect</button>
+        </div>
+      </form>
+      <div class="row">
+        <label class="check"><input id="allocator" type="checkbox"> Dynamic node ID allocator</label>
+        <p id="status" class="muted"></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Nodes</h2>
+      <table>
+        <thead>
+          <tr><th>ID</th><th>Name</th><th>Mode</th><th>Health</th><th>Uptime</th><th>SW</th></tr>
+        </thead>
+        <tbody id="nodes"></tbody>
+      </table>
+      <p id="nodes-empty" class="muted empty">No nodes seen yet.</p>
+    </section>
+
+    <section class="card">
+      <h2>Logs</h2>
+      <pre id="logs"></pre>
+    </section>
+
+    <section class="card">
+      <h2>Bus monitor</h2>
+      <div class="row">
+        <label class="grow">Filter <input id="filter" placeholder="type or node"></label>
+        <label class="check"><input id="pause" type="checkbox"> Pause</label>
+        <label class="check"><input id="hide-status" type="checkbox" checked> Hide NodeStatus</label>
+      </div>
+      <pre id="frames"></pre>
+    </section>
+  </main>
+
+  <dialog id="node-dialog">
+    <div class="dialog-title">
+      <h2 id="detail-title"></h2>
+      <button id="close-node" type="button" class="text" aria-label="Close">✕</button>
+    </div>
+    <div id="detail"></div>
+  </dialog>
+  <script src="static/app.js"></script>
+</body>
+</html>
