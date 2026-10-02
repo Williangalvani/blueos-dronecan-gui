@@ -163,7 +163,7 @@ class Bus:
 
     def set_param(self, node_id, name, kind, raw):
         def make_request():
-            return dronecan.uavcan.protocol.param.GetSet.Request(name=name, value=value_union(kind, raw))
+            return dronecan.uavcan.protocol.param.GetSet.Request(name=name, value=value_union(kind, raw, name))
 
         event = self.request(make_request, int(node_id))
         return serialize_param(event.response, None)

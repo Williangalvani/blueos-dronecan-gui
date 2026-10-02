@@ -37,6 +37,18 @@ def test_packed_node_status_decodes():
     assert row["src"] == 127
 
 
+def test_startup_tune_is_rtttl():
+    response = dronecan.uavcan.protocol.param.GetSet.Response()
+    response.name = "STARTUP_TUNE"
+    response.value.string_value = bytes([255] * 128)
+    row = serialize_param(response, 47)
+    assert row["value"] == "MelodyMelody:d=1,o=4,bpm=100:"
+    tune = "bluejay:b=570,o=4,d=32:4b,p,4e5,p,4b"
+    stored = value_union("string", tune, "STARTUP_TUNE")
+    assert len(bytes(stored.string_value)) == 128
+    assert bytes(stored.string_value)[0] != 255
+
+
 def test_node_without_info():
     status = dronecan.uavcan.protocol.NodeStatus()
     status.mode = status.MODE_OPERATIONAL

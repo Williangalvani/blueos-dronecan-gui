@@ -1,5 +1,7 @@
 import dronecan
 
+from app.am32_rtttl import AM32_Rtttl
+
 
 def text_field(value):
     if value is None:
@@ -37,18 +39,25 @@ def render_union(union):
 
 def serialize_param(response, index):
     kind = dronecan.get_active_union_field(response.value) or "empty"
+    name = text_field(response.name)
+    value = render_union(response.value)
+    if name == "STARTUP_TUNE" and kind == "string_value":
+        try:
+            value = AM32_Rtttl.get_melody_string_from_dronecan_param_value(response.value.string_value)
+        except Exception:
+            value = "Valid!"
     return {
         "index": index,
-        "name": text_field(response.name),
+        "name": name,
         "type": kind.replace("_value", ""),
-        "value": render_union(response.value),
+        "value": value,
         "default": render_union(response.default_value),
         "min": render_union(response.min_value),
         "max": render_union(response.max_value),
     }
 
 
-def value_union(kind, raw):
+def value_union(kind, raw, name=""):
     union = dronecan.uavcan.protocol.param.Value()
     if kind == "integer":
         union.integer_value = int(raw)
@@ -59,7 +68,11 @@ def value_union(kind, raw):
             raw = raw.strip().lower() in ("1", "true", "yes", "on")
         union.boolean_value = int(bool(raw))
     elif kind == "string":
-        union.string_value = "" if raw is None else str(raw)
+        if name == "STARTUP_TUNE":
+            encoded = AM32_Rtttl.to_am32_startup_melody("" if raw is None else str(raw), 128)
+            union.string_value = encoded["data"]
+        else:
+            union.string_value = "" if raw is None else str(raw)
     else:
         raise ValueError(f"unsupported parameter type {kind}")
     return union
